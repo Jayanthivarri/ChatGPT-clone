@@ -51,6 +51,7 @@ class ChatRequest(BaseModel):
 class ChatResponse(BaseModel):
     session_id: int
     response: str
+    tool: str | None= None
 
 class FeedbackCreate(BaseModel):
     message_id: int

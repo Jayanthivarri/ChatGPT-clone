@@ -55,3 +55,35 @@ class Feedback(Base):
         DateTime,
         default=datetime.utcnow
     )
+
+class UserMemory(Base):
+    __tablename__ = "user_memory"
+
+    id = Column(Integer, primary_key=True, index=True)
+
+    user_id = Column(
+        Integer,
+        ForeignKey("users.id"),
+        nullable=False
+    )
+
+    memory_key = Column(
+        String(100),
+        nullable=False
+    )
+
+    memory_value = Column(
+        Text,
+        nullable=False
+    )
+
+    created_at = Column(
+        DateTime,
+        default=datetime.utcnow
+    )
+
+    updated_at = Column(
+        DateTime,
+        default=datetime.utcnow,
+        onupdate=datetime.utcnow
+    )
