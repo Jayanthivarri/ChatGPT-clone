@@ -4,6 +4,7 @@ from app.tools.calculator import calculator
 from app.tools.weather_tool import get_weather
 from app.tools.web_search import web_search
 from app.tools.memory_tool import get_memory
+from app.tools.time_tool import get_time
 
 
 def execute_tool(
@@ -20,6 +21,10 @@ def execute_tool(
     elif tool == "weather":
 
         return get_weather(query)
+
+    elif tool == "time":
+
+        return get_time(query)
 
     elif tool == "memory":
 

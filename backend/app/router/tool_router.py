@@ -3,6 +3,148 @@ from app.services.llm_service import client, DEFAULT_MODEL
 
 def route_tool(query: str):
 
+    query_lower = query.lower().strip()
+
+    tools = []
+
+    # --------------------------------
+    # 1. MEMORY
+    # --------------------------------
+
+    memory_keywords = [
+        "my name",
+        "who am i",
+        "remember",
+        "what did i tell you",
+        "where do i live",
+        "my age",
+        "my email",
+        "my phone",
+        "my details",
+        "what do you know about me"
+    ]
+
+    if any(keyword in query_lower for keyword in memory_keywords):
+        tools.append("memory")
+
+    # --------------------------------
+    # 2. TIME
+    # --------------------------------
+
+    time_keywords = [
+        "what time",
+        "current time",
+        "time in",
+        "time at",
+        "local time",
+        "time now",
+        "clock",
+        "time and",
+        "time &",
+        "time plus",
+        "today's time",
+        "todays time",
+        "time today"
+    ]
+
+    if any(keyword in query_lower for keyword in time_keywords):
+        tools.append("time")
+
+    # --------------------------------
+    # 3. WEATHER
+    # --------------------------------
+
+    weather_keywords = [
+        "weather",
+        "temperature",
+        "forecast",
+        "rain",
+        "raining",
+        "humidity",
+        "wind",
+        "climate"
+    ]
+
+    if any(keyword in query_lower for keyword in weather_keywords):
+        tools.append("weather")
+
+    # --------------------------------
+    # 4. CALCULATOR
+    # --------------------------------
+
+    calculator_keywords = [
+        "calculate",
+        "calculator",
+        "how much is",
+        "multiply",
+        "divide",
+        "plus",
+        "minus",
+        "percentage",
+        "%",
+        "+",
+        "*",
+        "/",
+        "-",
+        "**"
+    ]
+
+    if any(keyword in query_lower for keyword in calculator_keywords):
+        tools.append("calculator")
+
+    # --------------------------------
+    # 5. WEB SEARCH
+    # --------------------------------
+
+    web_keywords = [
+        "latest",
+        "news",
+        "gold price",
+        "gold rate",
+        "silver price",
+        "silver rate",
+        "stock price",
+        "share price",
+        "bitcoin",
+        "crypto",
+        "ipl",
+        "score",
+        "match",
+        "election",
+        "traffic",
+        "petrol",
+        "diesel",
+        "currency",
+        "exchange rate",
+        "chief minister",
+        "who is cm",
+        "cm of",
+        "prime minister",
+        "president",
+        "governor"
+    ]
+
+    if any(keyword in query_lower for keyword in web_keywords):
+        tools.append("web_search")
+
+    # --------------------------------
+    # Remove duplicate tools
+    # --------------------------------
+
+    tools = list(dict.fromkeys(tools))
+
+    # --------------------------------
+    # DEBUG
+    # --------------------------------
+
+    if tools:
+        print("🛠 Selected Tools:", tools)
+        return tools
+
+    # --------------------------------
+    # 6. LLM CLASSIFIER
+    # --------------------------------
+
     router_messages = [
         {
             "role": "system",
@@ -14,13 +156,16 @@ Choose exactly ONE label from this list:
 weather
 calculator
 memory
+time
 web_search
 llm
 
 Rules:
+
 - Current weather, forecast, temperature → weather
 - Math, calculations → calculator
 - User profile or previous conversation → memory
+- Current time or time in a location → time
 - Latest news, live data, gold price, sports, stocks → web_search
 - Everything else → llm
 
@@ -47,54 +192,21 @@ Do not write a sentence.
 
     print("🛠 Router Response:", content)
 
-    if content is None:
-        tool = "llm"
-    else:
-        tool = content.strip().lower()
+    if not content:
+        return ["llm"]
 
-    # -----------------------
-    # Memory Fallback
-    # -----------------------
-    query_lower = query.lower()
+    tool = content.strip().lower()
 
-    memory_keywords = [
-        "my name",
-        "who am i",
-        "remember",
-        "what did i tell you",
-        "where do i live",
-        "my age",
-        "my email",
-        "my phone"
-    ]
-
-    
-
-    if tool == "llm" and any(keyword in query_lower for keyword in memory_keywords):
-        return "memory"
-
-    
-    # Web Search Fallback
-    web_keywords = [
-        "latest",
-        "today",
-        "current",
-        "live",
-        "news",
-        "gold price",
-        "stock price",
-        "bitcoin",
-        "ipl",
-        "score",
+    valid_tools = {
         "weather",
-        "temperature",
-        "forecast",
-        "chief minister",
-        "who is cm",
-        "cm of",
-        "prime minister",
-        "president",
-        "governor"
-    ]
+        "calculator",
+        "memory",
+        "time",
+        "web_search",
+        "llm"
+    }
 
-    return tool
+    if tool not in valid_tools:
+        return ["llm"]
+
+    return [tool]

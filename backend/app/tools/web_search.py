@@ -19,16 +19,52 @@ def web_search(query: str):
         "num": 5,
     }
 
-    response = requests.get(url, params=params, timeout=20)
-    response.raise_for_status()
+    try:
 
-    data = response.json()
+        response = requests.get(
+            url,
+            params=params,
+            timeout=60
+        )
+
+        response.raise_for_status()
+
+        data = response.json()
+
+    except requests.exceptions.Timeout:
+
+        print("❌ SerpAPI request timed out")
+
+        return [
+            {
+                "title": "Search Timeout",
+                "snippet": "The web search took too long to respond. Please try again.",
+                "link": ""
+            }
+        ]
+
+    except requests.exceptions.RequestException as e:
+
+        print("❌ SerpAPI Error:", e)
+
+        return [
+            {
+                "title": "Search Error",
+                "snippet": "Unable to fetch web search results right now.",
+                "link": ""
+            }
+        ]
+
+    # ----------------------------
+    # Results
+    # ----------------------------
 
     results = []
 
     # ----------------------------
     # Weather Results
     # ----------------------------
+
     if data.get("weather_result"):
 
         weather = data["weather_result"]
@@ -49,6 +85,7 @@ Wind: {weather.get('wind', 'N/A')}
     # ----------------------------
     # Google Answer Box
     # ----------------------------
+
     if data.get("answer_box"):
 
         answer = data["answer_box"]
@@ -71,6 +108,7 @@ Wind: {weather.get('wind', 'N/A')}
     # ----------------------------
     # Knowledge Graph
     # ----------------------------
+
     if data.get("knowledge_graph"):
 
         kg = data["knowledge_graph"]
@@ -90,6 +128,7 @@ Wind: {weather.get('wind', 'N/A')}
     # ----------------------------
     # Organic Results
     # ----------------------------
+
     for item in data.get("organic_results", [])[:5]:
 
         results.append(
@@ -103,6 +142,7 @@ Wind: {weather.get('wind', 'N/A')}
     # ----------------------------
     # Fallback
     # ----------------------------
+
     if not results:
 
         results.append(
