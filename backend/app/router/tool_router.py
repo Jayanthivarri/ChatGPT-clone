@@ -7,9 +7,9 @@ def route_tool(query: str):
 
     tools = []
 
-    # --------------------------------
+    # ============================================
     # 1. MEMORY
-    # --------------------------------
+    # ============================================
 
     memory_keywords = [
         "my name",
@@ -27,9 +27,9 @@ def route_tool(query: str):
     if any(keyword in query_lower for keyword in memory_keywords):
         tools.append("memory")
 
-    # --------------------------------
+    # ============================================
     # 2. TIME
-    # --------------------------------
+    # ============================================
 
     time_keywords = [
         "what time",
@@ -50,9 +50,9 @@ def route_tool(query: str):
     if any(keyword in query_lower for keyword in time_keywords):
         tools.append("time")
 
-    # --------------------------------
+    # ============================================
     # 3. WEATHER
-    # --------------------------------
+    # ============================================
 
     weather_keywords = [
         "weather",
@@ -68,9 +68,9 @@ def route_tool(query: str):
     if any(keyword in query_lower for keyword in weather_keywords):
         tools.append("weather")
 
-    # --------------------------------
+    # ============================================
     # 4. CALCULATOR
-    # --------------------------------
+    # ============================================
 
     calculator_keywords = [
         "calculate",
@@ -78,8 +78,6 @@ def route_tool(query: str):
         "how much is",
         "multiply",
         "divide",
-        "plus",
-        "minus",
         "percentage",
         "%",
         "+",
@@ -92,9 +90,39 @@ def route_tool(query: str):
     if any(keyword in query_lower for keyword in calculator_keywords):
         tools.append("calculator")
 
-    # --------------------------------
-    # 5. WEB SEARCH
-    # --------------------------------
+    # ============================================
+    # 5. MCP TOOLS
+    # ============================================
+
+    # ---- Project Information ----
+
+    project_keywords = [
+        "project information",
+        "project info",
+        "project details",
+        "about the project",
+        "tell me about this project",
+        "information about the project"
+    ]
+
+    if any(keyword in query_lower for keyword in project_keywords):
+        tools.append("get_project_info")
+
+    # ---- Greeting ----
+
+    greet_keywords = [
+        "greet me",
+        "say hello",
+        "greet",
+        "say hi"
+    ]
+
+    if any(keyword in query_lower for keyword in greet_keywords):
+        tools.append("greet")
+
+    # ============================================
+    # 6. WEB SEARCH
+    # ============================================
 
     web_keywords = [
         "latest",
@@ -127,23 +155,23 @@ def route_tool(query: str):
     if any(keyword in query_lower for keyword in web_keywords):
         tools.append("web_search")
 
-    # --------------------------------
-    # Remove duplicate tools
-    # --------------------------------
+    # ============================================
+    # REMOVE DUPLICATES
+    # ============================================
 
     tools = list(dict.fromkeys(tools))
 
-    # --------------------------------
+    # ============================================
     # DEBUG
-    # --------------------------------
+    # ============================================
 
     if tools:
         print("🛠 Selected Tools:", tools)
         return tools
 
-    # --------------------------------
-    # 6. LLM CLASSIFIER
-    # --------------------------------
+    # ============================================
+    # 7. LLM CLASSIFIER
+    # ============================================
 
     router_messages = [
         {
@@ -158,6 +186,8 @@ calculator
 memory
 time
 web_search
+get_project_info
+greet
 llm
 
 Rules:
@@ -167,6 +197,8 @@ Rules:
 - User profile or previous conversation → memory
 - Current time or time in a location → time
 - Latest news, live data, gold price, sports, stocks → web_search
+- Questions about the ChatGPT Clone project → get_project_info
+- Requests to greet someone or say hello → greet
 - Everything else → llm
 
 Output MUST be exactly one label.
@@ -203,6 +235,8 @@ Do not write a sentence.
         "memory",
         "time",
         "web_search",
+        "get_project_info",
+        "greet",
         "llm"
     }
 

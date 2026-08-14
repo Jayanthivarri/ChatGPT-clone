@@ -7,6 +7,7 @@ from app.database.database import Base, engine
 from app.database.models import User
 from app.api.auth import router as auth_router
 from app.api.chat import router as chat_router
+from app.services.mcp_client import get_mcp_tools
 
 Base.metadata.create_all(bind=engine)
 
@@ -35,6 +36,11 @@ def home():
     return {
         "message": "ChatGPT Clone Backend is Running 🚀"
     }
+
+@app.get("/mcp-tools")
+async def mcp_tools():
+    return await get_mcp_tools()
+
 
 
 if __name__ == "__main__":
